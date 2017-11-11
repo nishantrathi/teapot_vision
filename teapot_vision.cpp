@@ -186,17 +186,49 @@ public:
     glUniform1f(uShininess, m->shininess);
   }
   
-  void checkVisibility(glm::mat4 clipPlaneMatrix){
+   void checkVisibility(glm::mat4 clipPlaneMatrix){
+  
     // For the sake of this assignment, a teapot is defined to be
     // inside the view frustum if and only if the position data
     // member is within the volume defined by the view frustum.
-    for(int i = 0; i < teapotCount; i++){
-      // do something here to check to see if the teapots
-      // are in or out of the view frustum. Set the visibility
-      // flag as needed.
-      teapots[i]->visible = true;
+    /*std::tuple<int, int> w = windowSize( );
+    double ratio = double(std::get<0>(w)) / double(std::get<1>(w));
+    glm::mat4 persMat = glm::perspective(45.0, ratio, 0.2, 50.0);
+    for(int i=0;i<4;i++)
+    {
+      for(int j=0;j<4;j++)
+      {
+        printf("%f\t",persMat[i][j]);
+      }
+      printf("\n" );
+    }*/
+
+
+   
+    //printf("%d\n",teapotCount);
+    for(int i = 0; i < teapotCount; i++)
+    {
+      int checkCount =0;
+      UtahTeapot * ut = teapots[i];
+      //std::cout<<glm::to_string(ut->position)<<std::endl;
+      glm::vec4 projectionVec = matrixVectorMultiplication(clipPlaneMatrix,ut->position);
+      std::cout<<glm::to_string(projectionVec)<<std::endl;
+      //printf("val %d %f %f %f %f \n", i,projectionVec.x,projectionVec.y,projectionVec.z,projectionVec.w);
+      
+      if(projectionVec.x<projectionVec.w){// && std::abs(projectionVec.y)<projectionVec.w && 0<projectionVec.z&&projectionVec.z<projectionVec.w){
+        teapots[i]->visible = true;
+      }else{
+        teapots[i]->visible = false;
+      }
+      
     }
   }
+
+  glm::vec4 matrixVectorMultiplication(glm::mat4 m, glm::vec3 p){
+    glm::vec4 newp = m*glm::vec4(p,1.0);
+    return newp;
+  }
+
 
   bool render( ){
     glm::vec4 _light0;
