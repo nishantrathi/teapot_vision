@@ -108,9 +108,9 @@ public:
    
   void initLights( ){
     glm::vec3 color0(1.0, 1.0, 1.0);
-    glm::vec3 position0(0.0, 50.0, 50.0);
+    glm::vec3 position0(0.0, 20.0, 20.0);
     glm::vec3 color1(1.0, 1.0, 1.0);
-    glm::vec3 position1(0.0, 50.0, -50.0);
+    glm::vec3 position1(0.0, 20.0, -20.0);
     light0 = SpinningLight(color0, position0, centerPosition);
     light1 = SpinningLight(color1, position1, centerPosition);
   }
@@ -251,8 +251,8 @@ public:
     // Set light & material properties for the teapot;
     // lights are transformed by current modelview matrix
     // such that they are positioned correctly in the scene.
-    _light0 = lookAtMatrix * light0.position( );
-    _light1 = lookAtMatrix * light1.position( );
+    _light0 = lookAtMatrix * light0.position4( );
+    _light1 = lookAtMatrix * light1.position4( );
     
     if(currentCamera == &mainCamera){
       for(int i = 0; i < teapotCount; i++){
@@ -274,6 +274,7 @@ public:
       Material redMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 0.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material whiteMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material yellowMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(1.0, 1.0, 0.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
+      Material blueMaterial = Material(glm::vec4(0.2, 0.2, 0.2, 1.0), glm::vec4(0.0, 0.0, 1.0, 1.0), glm::vec4(1.0, 1.0, 1.0, 1.0), 100.0);
       Material* currentMaterial = &redMaterial;
       shaderProgram.activate( );
       for(int i = 0; i < teapotCount; i++){
@@ -298,6 +299,16 @@ public:
       activateUniforms(_light0, _light1, &yellowMaterial);
       mainCamera.draw( );
       mainCamera.drawViewFrustum(ratio);
+
+      modelViewMatrix = glm::translate(lookAtMatrix, light0.position);
+      normalMatrix = glm::inverseTranspose(modelViewMatrix);
+      activateUniforms(_light0, _light1, &blueMaterial);
+      light0.draw( );
+
+      modelViewMatrix = glm::translate(lookAtMatrix, light1.position);
+      normalMatrix = glm::inverseTranspose(modelViewMatrix);
+      activateUniforms(_light0, _light1, &blueMaterial);
+      light1.draw( );
     }
 
     
